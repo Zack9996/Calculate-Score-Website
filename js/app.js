@@ -320,3 +320,96 @@ allTrash.forEach((trash) => {
     setGPA();
   });
 });
+
+// 以下為排序演算法
+let btn1 = document.querySelector(".sort-descending");
+let btn2 = document.querySelector(".sort-ascending");
+btn1.addEventListener("click", () => {
+  handleSorting("descending"); // 由大到小
+});
+btn2.addEventListener("click", () => {
+  handleSorting("ascending"); // 由小到大
+});
+
+function handleSorting(direction) {
+  let graders = document.querySelectorAll("div.grader");
+  let objectArray = [];
+  for (let i = 0; i < graders.length; i++) {
+    let class_name = graders[i].children[0].value; // class category
+    let class_number = graders[i].children[1].value; // class numbers
+    let class_credit = graders[i].children[2].value; // credits
+    let class_grade = graders[i].children[3].value; // select
+    if (
+      !(
+        class_name == "" &&
+        class_number == "" &&
+        class_credit == "" &&
+        class_grade == ""
+      )
+    ) {
+      let class_object = {
+        class_name,
+        class_name,
+        class_credit,
+        class_grade,
+        // 下面是正常寫法，但因大多數都是這麼使用的，所以直接省略下面的寫法直接用上面的寫法就可以了。
+        // class_name:class_name,
+        // class_number:class_name,
+        // class_credit:class_credit,
+        // class_grade:class_grade
+      };
+      objectArray.push(class_object);
+    }
+  }
+
+  // 取得objectArray後，我們可以把成績String換成數字
+  for (let i = 0; i < objectArray.length; i++) {
+    objectArray[i].class_grade_number = convertor(objectArray[i].class_grade);
+    objectArray = mergeSort(objectArray);
+    if (direction == "descending") {
+      objectArray = objectArray.reverse();
+    }
+  }
+
+}
+
+function merge(a1, a2) {
+  let result = [];
+  let i = 0;
+  let j = 0;
+
+  while (i < a1.length && j < a2.length) {
+    if (a1[i].class_grade_number > a2[j].class_grade_number) {
+      result.push(a2[j]);
+      j++;
+    } else {
+      result.push(a1[i]);
+      i++;
+    }
+  }
+
+  while (i < a1.length) {
+    result.push(a1[i]);
+    i++;
+  }
+  while (j < a2.length) {
+    result.push(a2[j]);
+    j++;
+  }
+
+  return result;
+}
+function mergeSort(arr) {
+  if (arr.length == 0) {
+    return;
+  }
+
+  if (arr.length == 1) {
+    return arr;
+  } else {
+    let middle = Math.floor(arr.length / 2);
+    let left = arr.slice(0, middle);
+    let right = arr.slice(middle, arr.length);
+    return merge(mergeSort(left), mergeSort(right));
+  }
+}
