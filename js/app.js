@@ -349,12 +349,12 @@ function handleSorting(direction) {
     ) {
       let class_object = {
         class_name,
-        class_name,
+        class_number,
         class_credit,
         class_grade,
         // 下面是正常寫法，但因大多數都是這麼使用的，所以直接省略下面的寫法直接用上面的寫法就可以了。
         // class_name:class_name,
-        // class_number:class_name,
+        // class_number:class_number,
         // class_credit:class_credit,
         // class_grade:class_grade
       };
@@ -370,7 +370,95 @@ function handleSorting(direction) {
       objectArray = objectArray.reverse();
     }
   }
+  // 根據objectArray的內容，來更新網頁
+  let allInput = document.querySelector(".all-inputs");
+  allInput.innerHTML = "";
+  for (let i = 0; i < objectArray.length; i++) {
+    allInput.innerHTML += `<form>
+    <div class="grader">
+      <input
+      type="text"
+      placeholder="class category"
+      class="class-type"
+      list="opt"
+      value=${objectArray[i].class_name}
+      /><!--
+      --><input
+      type="text"
+      placeholder="class number"
+      class="class-number"
+      value=${objectArray[i].class_number}
+      /><!--
+      --><input
+      type="number"
+      placeholder="credits"
+      min="0"
+      max="6"
+      class="class-credit"
+      value=${objectArray[i].class_credit}
+      /><!--
+      --><select name="select" class="select">
+      <option value=""></option>
+      <option value="A">A</option>
+      <option value="A-">A-</option>
+      <option value="B+">B+</option>
+      <option value="B">B</option>
+      <option value="B-">B-</option>
+      <option value="C+">C+</option>
+      <option value="C">C</option>
+      <option value="C-">C-</option>
+      <option value="D+">D+</option>
+      <option value="D">D</option>
+      <option value="D-">D-</option>
+      <option value="F">F</option></select
+      ><!--
+      --><button class="trash-button">
+      <i class="fas fa-trash"></i>
+      </button>
+    </div>
+    </form>;`;
+  }
+  // select可直接用JS來改
+  graders = document.querySelectorAll("div.grader");
+  for (let i = 0; i < graders.length; i++) {
+    graders[i].children[3].value = objectArray[i].class_grade;
+  }
 
+  // select事件監聽
+  allSelects = document.querySelectorAll("select");
+  allSelects.forEach((select) => {
+    // 將改變排序後select顏色
+    changeColor(select);
+    // 將select加入事件監聽
+    select.addEventListener("change", (e) => {
+      changeColor(e.target);
+    });
+  });
+
+  // credit事件監聽
+  let allCredits = document.querySelectorAll(".class-credit");
+  allCredits.forEach((credit) => {
+    credit.addEventListener("change",(e)=>{
+      setGPA(); 
+    })
+  });
+
+  // 垃圾桶
+  let allTrash = document.querySelectorAll(".trash-button");
+  allTrash.forEach((trash) => {
+    trash.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.target.parentElement.parentElement.style.animation =
+        "scaleDown 0.5s ease forwards";
+      e.target.parentElement.parentElement.addEventListener(
+        "animationend",
+        (e) => {
+          e.target.remove();
+          setGPA();
+        }
+      );
+    });
+  });
 }
 
 function merge(a1, a2) {
